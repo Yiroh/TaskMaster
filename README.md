@@ -35,3 +35,24 @@ A simple to-do list application built with the MERN stack (MongoDB, Express, Rea
 3. Start the React app:
    ```bash
    npm start
+
+
+### Developer
+1. Navigate to the todo-list-app directory:
+   ```bash
+   cd todo-list-app
+
+2. Start the backend:
+   ```bash
+   node server.js
+
+3. In a separate terminal tab, navigate to client directory:
+   ```bash
+   cd client
+
+4. Build and serve the application:
+   ```bash
+   npm run build
+   serve -s build
+
+The developer instructions are mainly for me in case I do not work on this project for a little while and forget...
