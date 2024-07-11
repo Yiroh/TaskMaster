@@ -61,20 +61,23 @@ const TodoList = () => {
             <table>
                 <thead>
                     <tr>
-                        <th> Task </th>
-                        <th> Due Date </th>
-                        <th> Status </th>
-                        <th> Actions </th>
+                        <th>Task</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                <tbody>
                     {todos.map(todo => (
-                        <TodoItem 
-                            key={todo._id} 
-                            todo={todo} 
-                            updateStatus={updateTodoStatus} 
-                        />
+                        <tr key={todo._id}>
+                            <TodoItem 
+                                todo={todo} 
+                                updateStatus={updateTodoStatus} 
+                            />
+                        </tr>
                     ))}
+                </tbody>
                 </tbody>
             </table>
         </div>

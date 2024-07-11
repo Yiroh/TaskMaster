@@ -36,12 +36,29 @@ thead {
 }
 th, td {
     padding: 10px;
-    border: 1px solid #25291cff;
-    text-align: left;
-    vertical-align: middle;
+    border: 1px solid #ddd;
+    text-align: left; /* Default alignment for table cells */
+    vertical-align: middle; /* Ensure vertical alignment */
+    height: 50px; /* Ensure consistent row height */
 }
-th {
-    text-align: center;
+th, tr {
+    text-align: center; /* Center align the text in the header cells */
+    vertical-align: middle;
+    width: 100%;
+}
+
+/* Set specific widths for each column */
+th:nth-child(1) { /* Task */
+    width: 60%;
+}
+th:nth-child(2) { /* Due Date */
+    width: 15%;
+}
+th:nth-child(3) { /* Status */
+    width: 15%;
+}
+th:nth-child(4) { /* Actions */
+    width: 10%;
 }
 .todo-item td {
     vertical-align: middle;
@@ -70,5 +87,5 @@ h1 {
     text-align: center;
     padding: center;
     border-bottom: 1px solid #25291cff;
-    margin-right: 5%;
+    margin-left: 5%;
 }
