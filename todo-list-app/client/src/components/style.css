@@ -1,91 +1,143 @@
-
-/*      Dedicated Color Palette         */
-/*      --beige: #e3e7d3ff;             */
-/*      --silver: #bdc2bfff;            */
-/*      --battleship-gray: #989c94ff;   */
-/*      --black-olive: #25291cff;       */
-/*      --vanilla: #e6e49fff;           */
-
-
-/* The Todo Items CSS */
-.todo-item {
-    display: flex;
-    text-align: center;
-    padding: 8px;
-    border-bottom: 1px solid #bdc2bfff;
-}
-.todo-item span {
-    flex: 1;
-}
-.div {
-    padding: 24px;
-    margin-right: 5%;
-}
-
-
-/* Table CSS */
-table {
-    width: 90%;
-    margin-left: 5%;
-    margin-top: 3px;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-thead {
-    background-color: #e3e7d3ff;
-}
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left; /* Default alignment for table cells */
-    vertical-align: middle; /* Ensure vertical alignment */
-    height: 50px; /* Ensure consistent row height */
-}
-th, tr {
-    text-align: center; /* Center align the text in the header cells */
-    vertical-align: middle;
+.todo-list {
     width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* Set specific widths for each column */
-th:nth-child(1) { /* Task */
-    width: 60%;
+.input-section, .category-input-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
-th:nth-child(2) { /* Due Date */
-    width: 15%;
-}
-th:nth-child(3) { /* Status */
-    width: 15%;
-}
-th:nth-child(4) { /* Actions */
-    width: 10%;
-}
-.todo-item td {
-    vertical-align: middle;
-}
-input[type="date"], select {
+
+.input-section input, .category-input-section input, .input-section select {
+    margin-right: 10px;
     padding: 5px;
-    box-sizing: border-box;
-}
-input[type="text"], select {
-    padding: 5px;
-    margin-left: 5%;
-    box-sizing: border-box;
-}
-button {
-    margin: 0 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
 }
 
-
-/* Misc CSS */
-select {
-    margin-left: 8px;
+.input-section button, .category-input-section button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #5fa971;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
 }
-h1 {
+
+.category-section {
+    margin: 20px 0;
+    position: relative;
+}
+
+.category-section h2 {
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.category-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-category, .remove-category {
+    cursor: pointer;
+    color: #fff;
+    font-size: 1.2em;
+}
+
+.edit-category:hover, .remove-category:hover {
+    color: #ddd;
+}
+
+.edit-category-input {
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.save-category {
+    padding: 5px 10px;
+    border: none;
+    background-color: #5fa971;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tasks {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.todo-item:last-child {
+    border-bottom: none;
+}
+
+.task-info {
+    flex: 1;
+}
+
+.task-info span {
+    margin-left: 10px;
+}
+
+.task-actions {
+    display: flex;
+    align-items: center;
+}
+
+.task-actions input[type="date"], .task-actions select {
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.task-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.task-buttons button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #e74c3c;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+h1 {
     text-align: center;
-    padding: center;
-    border-bottom: 1px solid #25291cff;
-    margin-left: 5%;
+    font-size: xx-large;
+}
+
+h3 {
+    padding-right: 5px;
+}
+
+.remove-category {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    cursor: pointer;
 }
