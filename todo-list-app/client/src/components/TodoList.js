@@ -100,6 +100,8 @@ const TodoList = () => {
         return todos.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     };
 
+    const filteredTodos = todos.filter(todo => categories.some(cat => cat.id === todo.category));
+
     return (
         <div className="todo-list">
             <h1>TaskMaster</h1>
@@ -115,6 +117,12 @@ const TodoList = () => {
                     onClick={() => setActiveTab('category')}
                 >
                     Add New Category
+                </button>
+                <button 
+                    className={`tab ${activeTab === 'allTasks' ? 'active' : ''}`} 
+                    onClick={() => setActiveTab('allTasks')}
+                >
+                    All Tasks
                 </button>
             </div>
             {activeTab === 'task' && (
@@ -163,47 +171,79 @@ const TodoList = () => {
                     <button onClick={addCategory}>Add Category</button>
                 </div>
             )}
-            {categories.map(cat => (
-                <div key={cat.id} className="category-section">
-                    <h2 style={{ backgroundColor: cat.color }}>
-                        {editingCategoryId === cat.id ? (
-                            <>
-                                <input 
-                                    type="text" 
-                                    value={editingCategoryName} 
-                                    onChange={(e) => setEditingCategoryName(e.target.value)} 
-                                    onBlur={() => saveCategoryName(cat.id)}
-                                    className="edit-category-input"
-                                />
-                                <button className="save-category" onClick={() => saveCategoryName(cat.id)}>Save</button>
-                            </>
-                        ) : (
-                            <>
-                                {cat.name}
-                                <span className="category-icons">
-                                    <div className="tooltip">
-                                        <FontAwesomeIcon icon={faPencilAlt} className="edit-category" onClick={() => startEditingCategory(cat.id, cat.name)} />
-                                        <span className="tooltiptext">Edit Category</span>
-                                    </div>
-                                    <div className="tooltip">
-                                        <FontAwesomeIcon icon={faTimes} className="remove-category" onClick={() => removeCategory(cat.id)} />
-                                        <span className="tooltiptext">Remove Category</span>
-                                    </div>
-                                </span>
-                            </>
-                        )}
-                    </h2>
+            {activeTab === 'allTasks' && (
+                <div className="all-tasks-section">
+                    <h3>All Tasks</h3>
                     <div className="tasks">
-                        {todos.filter(todo => todo.category === cat.id).map(todo => (
-                            <TodoItem 
-                                key={todo._id} 
-                                todo={todo} 
-                                updateStatus={updateTodoStatus} 
-                                removeTodo={removeTodo}
-                            />
+                        {sortTodosByDate(filteredTodos).map(todo => (
+                            <div key={todo._id} className="all-tasks-item">
+                                <div className="task-info">
+                                    <div className="category-label" style={{ backgroundColor: categories.find(cat => cat.id === todo.category)?.color }}>
+                                        <span className="tooltiptext">{categories.find(cat => cat.id === todo.category)?.name}</span>
+                                    </div>
+                                    <span>{todo.text}</span>
+                                </div>
+                                <div className="task-actions">
+                                    <input 
+                                        type="date" 
+                                        value={todo.dueDate ? todo.dueDate.split('T')[0] : ''} 
+                                        onChange={(e) => updateTodoStatus(todo._id, todo.status, e.target.value, todo.category)} 
+                                    />
+                                    <select value={todo.status} onChange={(e) => updateTodoStatus(todo._id, e.target.value, todo.dueDate, todo.category)}>
+                                        {['Todo', 'In Progress', 'Almost Complete', 'Complete'].map(status => (
+                                            <option key={status} value={status}>{status}</option>
+                                        ))}
+                                    </select>
+                                    <button onClick={() => removeTodo(todo._id)}>Remove</button>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
+            )}
+            {categories.map(cat => (
+                activeTab !== 'allTasks' && (
+                    <div key={cat.id} className="category-section">
+                        <h2 style={{ backgroundColor: cat.color }}>
+                            {editingCategoryId === cat.id ? (
+                                <>
+                                    <input 
+                                        type="text" 
+                                        value={editingCategoryName} 
+                                        onChange={(e) => setEditingCategoryName(e.target.value)} 
+                                        onBlur={() => saveCategoryName(cat.id)}
+                                        className="edit-category-input"
+                                    />
+                                    <button className="save-category" onClick={() => saveCategoryName(cat.id)}>Save</button>
+                                </>
+                            ) : (
+                                <>
+                                    {cat.name}
+                                    <span className="category-icons">
+                                        <div className="tooltip">
+                                            <FontAwesomeIcon icon={faPencilAlt} className="edit-category" onClick={() => startEditingCategory(cat.id, cat.name)} />
+                                            <span className="tooltiptext">Edit Category</span>
+                                        </div>
+                                        <div className="tooltip">
+                                            <FontAwesomeIcon icon={faTimes} className="remove-category" onClick={() => removeCategory(cat.id)} />
+                                            <span className="tooltiptext">Remove Category</span>
+                                        </div>
+                                    </span>
+                                </>
+                            )}
+                        </h2>
+                        <div className="tasks">
+                            {todos.filter(todo => todo.category === cat.id).map(todo => (
+                                <TodoItem 
+                                    key={todo._id} 
+                                    todo={todo} 
+                                    updateStatus={updateTodoStatus} 
+                                    removeTodo={removeTodo}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )
             ))}
         </div>
     );

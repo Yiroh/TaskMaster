@@ -101,15 +101,17 @@
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.todo-item {
+.todo-item, .all-tasks-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
 }
-.todo-item:last-child {
+.todo-item:last-child, .all-tasks-item:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 .task-info {
     flex: 1;
@@ -170,6 +172,7 @@ h3 {
     position: relative;
     display: inline-block;
 }
+
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
@@ -186,7 +189,40 @@ h3 {
     opacity: 0;
     transition: opacity 0.3s;
 }
+
 .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.category-label {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 12px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.category-label .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the label */
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.category-label:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
