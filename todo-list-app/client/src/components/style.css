@@ -3,6 +3,11 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -15,7 +20,7 @@
 .tab {
     padding: 10px 20px;
     border: none;
-    background-color: #f0f0f0;
+    background-color: #e0e0e0;
     cursor: pointer;
     font-size: 16px;
     margin-right: 10px;
@@ -23,7 +28,7 @@
     transition: background-color 0.3s ease;
 }
 .tab:hover {
-    background-color: #ddd;
+    background-color: #ccc;
 }
 .tab.active {
     background-color: #5fa971;
@@ -32,10 +37,12 @@
 
 
 /* Input Fields */
-.input-section, .category-input-section {
-    display: flex;
-    align-items: center;
+.input-section, .category-input-section, .all-tasks-section {
     margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 .input-section input, .category-input-section input, .input-section select {
     margin-right: 10px;
@@ -43,13 +50,17 @@
     border-radius: 5px;
     border: 1px solid #ddd;
 }
-.input-section button, .category-input-section button {
+.input-section button, .category-input-section button, .all-tasks-section button {
     padding: 5px 10px;
     border: none;
     background-color: #5fa971;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.input-section button:hover, .category-input-section button:hover, .all-tasks-section button:hover {
+    background-color: #4a8b5e;
 }
 
 
@@ -57,6 +68,10 @@
 .category-section {
     margin: 20px 0;
     position: relative;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 .category-section h2 {
     color: #fff;
@@ -65,18 +80,51 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #5fa971;
 }
-.category-icons {
+.category-section h2 .category-icons {
     display: flex;
-    gap: 10px;
+    align-items: center;
+}
+.progress {
+    width: 70%; /* Constant size */
+    height: 10px;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    margin-right: 10px; /* Space between progress bar and icons */
+}
+.progress::-webkit-progress-value {
+    background-color: #5fa971;
 }
 .edit-category, .remove-category {
     cursor: pointer;
     color: #fff;
     font-size: 1.2em;
+    margin-left: 10px;
+    position: relative; /* For tooltip positioning */
 }
 .edit-category:hover, .remove-category:hover {
     color: #ddd;
+}
+.edit-category .tooltiptext, .remove-category .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the icon */
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.edit-category:hover .tooltiptext, .remove-category:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 .edit-category-input {
     margin-right: 10px;
@@ -108,6 +156,10 @@
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px;
+    background-color: #fafafa;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .todo-item:last-child, .all-tasks-item:last-child {
     border-bottom: none;
@@ -115,9 +167,42 @@
 }
 .task-info {
     flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative; /* Added for tooltip positioning */
 }
 .task-info span {
     margin-left: 10px;
+}
+.task-info .recurrence-info {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    position: relative; /* Added for tooltip positioning */
+}
+.task-info .recurrence-icon {
+    margin-right: 5px;
+    color: #5fa971;
+}
+.task-info .recurrence-info .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the icon */
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.task-info .recurrence-info:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 .task-actions {
     display: flex;
@@ -141,6 +226,9 @@
     border-radius: 5px;
     cursor: pointer;
 }
+.task-actions button:hover {
+    background-color: #c0392b;
+}
 
 
 /* Headers */
@@ -153,48 +241,34 @@ h3 {
 }
 
 
-.button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #5fa971;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.button:hover {
-    background-color: #4a8b5e;
-}
-
-
 /* Tool Tips */
-.tooltip {
-    position: relative;
+.info-tooltip {
     display: inline-block;
+    position: relative;
+    margin-left: 10px;
+    cursor: pointer;
+    color: #5fa971;
 }
-
-.tooltip .tooltiptext {
+.info-tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: 200px;
     background-color: #555;
     color: #fff;
     text-align: center;
     border-radius: 5px;
-    padding: 5px 0;
+    padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Position above the icon */
+    bottom: 125%;
     left: 50%;
-    margin-left: -60px;
+    margin-left: -100px;
     opacity: 0;
     transition: opacity 0.3s;
 }
-
-.tooltip:hover .tooltiptext {
+.info-tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
-
 .category-label {
     display: inline-block;
     padding: 5px 10px;
@@ -204,7 +278,6 @@ h3 {
     margin-right: 10px;
     position: relative;
 }
-
 .category-label .tooltiptext {
     visibility: hidden;
     width: 120px;
@@ -212,16 +285,15 @@ h3 {
     color: #fff;
     text-align: center;
     border-radius: 5px;
-    padding: 5px 0;
+    padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Position above the label */
+    bottom: 125%;
     left: 50%;
     margin-left: -60px;
     opacity: 0;
     transition: opacity 0.3s;
 }
-
 .category-label:hover .tooltiptext {
     visibility: visible;
     opacity: 1;

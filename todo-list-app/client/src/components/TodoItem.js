@@ -1,20 +1,28 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const TodoItem = ({ todo, updateStatus, removeTodo }) => {
     const statuses = ['Todo', 'In Progress', 'Almost Complete', 'Complete'];
 
     const handleStatusChange = (e) => {
-        updateStatus(todo._id, e.target.value, todo.dueDate, todo.category);
+        updateStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority, todo.recurrence);
     };
 
     const handleDueDateChange = (e) => {
-        updateStatus(todo._id, todo.status, e.target.value, todo.category);
+        updateStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority, todo.recurrence);
     };
 
     return (
         <div className="todo-item">
             <div className="task-info">
                 <span>{todo.text}</span>
+                {todo.recurrence !== 'None' && (
+                    <div className="recurrence-info">
+                        <FontAwesomeIcon icon={faClock} className="recurrence-icon" />
+                        <span className="tooltiptext">Recurs {todo.recurrence.toLowerCase()}</span>
+                    </div>
+                )}
             </div>
             <div className="task-actions">
                 <input 
@@ -27,8 +35,6 @@ const TodoItem = ({ todo, updateStatus, removeTodo }) => {
                         <option key={status} value={status}>{status}</option>
                     ))}
                 </select>
-            </div>
-            <div className="task-buttons">
                 <button onClick={() => removeTodo(todo._id)}>Remove</button>
             </div>
         </div>
