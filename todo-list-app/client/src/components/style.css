@@ -161,6 +161,10 @@
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+.todo-item.completed-task, .all-tasks-item.completed-task {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
 .todo-item:last-child, .all-tasks-item:last-child {
     border-bottom: none;
     margin-bottom: 0;
@@ -174,39 +178,15 @@
 .task-info span {
     margin-left: 10px;
 }
-.task-info .recurrence-info {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    position: relative; /* Added for tooltip positioning */
-}
-.task-info .recurrence-icon {
-    margin-right: 5px;
-    color: #5fa971;
-}
-.task-info .recurrence-info .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Position above the icon */
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.task-info .recurrence-info:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
 .task-actions {
     display: flex;
+    flex-direction: row;
     align-items: center;
+}
+.task-actions button 
+{
+    padding: 5px;
+    margin: 10px;
 }
 .task-actions input[type="date"], .task-actions select {
     margin-left: 10px;
@@ -215,6 +195,7 @@
 }
 .task-buttons {
     display: flex;
+    flex-direction: row;
     align-items: center;
 }
 .task-buttons button {

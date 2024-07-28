@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TodoItem from './TodoItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faPencilAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 const TodoList = () => {
     const [todos, setTodos] = useState([]);
@@ -11,7 +11,6 @@ const TodoList = () => {
     const [dueDate, setDueDate] = useState('');
     const [category, setCategory] = useState(null);
     const [priority, setPriority] = useState('Medium');
-    const [recurrence, setRecurrence] = useState('None');
     const [newCategory, setNewCategory] = useState('');
     const [newCategoryColor, setNewCategoryColor] = useState('#000000');
     const [activeTab, setActiveTab] = useState('task');
@@ -33,7 +32,7 @@ const TodoList = () => {
             console.log("Empty task or no category selected, not adding");
             return; // Prevent adding empty todos or if no category is selected
         }
-        const newTodo = { text, dueDate, category, priority, status: 'Todo', recurrence };
+        const newTodo = { text, dueDate, category, priority, status: 'Todo' };
         axios.post('http://localhost:5000/todos', newTodo)
             .then(response => {
                 console.log("Task added: ", response.data);
@@ -41,7 +40,6 @@ const TodoList = () => {
                 setText(''); // Clear the input field
                 setDueDate(''); // Clear the due date field
                 setPriority('Medium'); // Reset the priority field
-                setRecurrence('None'); // Reset the recurrence field
             })
             .catch(error => {
                 console.error("There was an error adding the todo!", error);
@@ -78,44 +76,14 @@ const TodoList = () => {
         }
     };
 
-    const updateTodoStatus = (id, status, dueDate, category, priority, recurrence) => {
-        axios.patch(`http://localhost:5000/todos/${id}`, { status, dueDate, category, priority, recurrence })
+    const updateTodoStatus = (id, status, dueDate, category, priority) => {
+        axios.patch(`http://localhost:5000/todos/${id}`, { status, dueDate, category, priority })
             .then(response => {
                 const updatedTodos = todos.map(todo => todo._id === id ? response.data : todo);
                 setTodos(sortTodosByPriorityAndDate(updatedTodos));
-                if (status === 'Complete') {
-                    handleRecurrence(response.data);
-                }
             })
             .catch(error => {
                 console.error("There was an error updating the todo!", error);
-            });
-    };
-
-    const handleRecurrence = (todo) => {
-        if (todo.recurrence === 'None') return;
-        let nextDueDate;
-        const currentDueDate = new Date(todo.dueDate);
-        switch (todo.recurrence) {
-            case 'Daily':
-                nextDueDate = new Date(currentDueDate.setDate(currentDueDate.getDate() + 1));
-                break;
-            case 'Weekly':
-                nextDueDate = new Date(currentDueDate.setDate(currentDueDate.getDate() + 7));
-                break;
-            case 'Monthly':
-                nextDueDate = new Date(currentDueDate.setMonth(currentDueDate.getMonth() + 1));
-                break;
-            default:
-                return;
-        }
-        const newTodo = { ...todo, dueDate: nextDueDate.toISOString().split('T')[0], status: 'Todo' };
-        axios.post('http://localhost:5000/todos', newTodo)
-            .then(response => {
-                setTodos(sortTodosByPriorityAndDate([...todos, response.data]));
-            })
-            .catch(error => {
-                console.error("There was an error adding the recurring todo!", error);
             });
     };
 
@@ -200,17 +168,7 @@ const TodoList = () => {
                                 <option value="Medium">Medium Priority</option>
                                 <option value="Low">Low Priority</option>
                             </select>
-                            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
-                                <option value="None">No Recurrence</option>
-                                <option value="Daily">Daily</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Monthly">Monthly</option>
-                            </select>
                             <button onClick={addTodo}>Add Task</button>
-                            <div className="info-tooltip">
-                                <FontAwesomeIcon icon={faInfoCircle} />
-                                <span className="tooltiptext">Recurring tasks automatically create a new task when completed based on the recurrence interval.</span>
-                            </div>
                         </>
                     )}
                 </div>
@@ -237,7 +195,7 @@ const TodoList = () => {
                     <h3>All Tasks</h3>
                     <div className="tasks">
                         {sortTodosByPriorityAndDate(filteredTodos).map(todo => (
-                            <div key={todo._id} className="all-tasks-item">
+                            <div key={todo._id} className={`all-tasks-item ${todo.status === 'Complete' ? 'completed-task' : ''}`}>
                                 <div className="task-info">
                                     <div className="category-label" style={{ backgroundColor: categories.find(cat => cat.id === todo.category)?.color }}>
                                         <span className="tooltiptext">{categories.find(cat => cat.id === todo.category)?.name}</span>
@@ -248,9 +206,9 @@ const TodoList = () => {
                                     <input 
                                         type="date" 
                                         value={todo.dueDate ? todo.dueDate.split('T')[0] : ''} 
-                                        onChange={(e) => updateTodoStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority, todo.recurrence)} 
+                                        onChange={(e) => updateTodoStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority)}
                                     />
-                                    <select value={todo.status} onChange={(e) => updateTodoStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority, todo.recurrence)}>
+                                    <select value={todo.status} onChange={(e) => updateTodoStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority)}>
                                         {['Todo', 'In Progress', 'Almost Complete', 'Complete'].map(status => (
                                             <option key={status} value={status}>{status}</option>
                                         ))}

@@ -1,6 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const TodoItem = ({ todo, updateStatus, removeTodo }) => {
     const statuses = ['Todo', 'In Progress', 'Almost Complete', 'Complete'];
@@ -17,12 +15,6 @@ const TodoItem = ({ todo, updateStatus, removeTodo }) => {
         <div className="todo-item">
             <div className="task-info">
                 <span>{todo.text}</span>
-                {todo.recurrence !== 'None' && (
-                    <div className="recurrence-info">
-                        <FontAwesomeIcon icon={faClock} className="recurrence-icon" />
-                        <span className="tooltiptext">Recurs {todo.recurrence.toLowerCase()}</span>
-                    </div>
-                )}
             </div>
             <div className="task-actions">
                 <input 

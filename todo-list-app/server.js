@@ -15,8 +15,7 @@ const todoSchema = new mongoose.Schema({
     dueDate: { type: Date, required: false },
     category: { type: Number, required: true },
     priority: { type: String, enum: ['High', 'Medium', 'Low'], default: 'Medium' },
-    status: { type: String, enum: ['Todo', 'In Progress', 'Almost Complete', 'Complete'], default: 'Todo' },
-    recurrence: { type: String, enum: ['None', 'Daily', 'Weekly', 'Monthly'], default: 'None' }
+    status: { type: String, enum: ['Todo', 'In Progress', 'Almost Complete', 'Complete'], default: 'Todo' }
 });
 
 const Todo = mongoose.model('Todo', todoSchema);
@@ -37,7 +36,6 @@ app.post('/todos', async (req, res) => {
         category: req.body.category,
         priority: req.body.priority,
         status: req.body.status,
-        recurrence: req.body.recurrence
     });
 
     try {
@@ -58,7 +56,6 @@ app.patch('/todos/:id', async (req, res) => {
         if (req.body.category != null) todo.category = req.body.category;
         if (req.body.priority != null) todo.priority = req.body.priority;
         if (req.body.status != null) todo.status = req.body.status;
-        if (req.body.recurrence != null) todo.recurrence = req.body.recurrence;
 
         const updatedTodo = await todo.save();
         res.json(updatedTodo);
@@ -68,15 +65,8 @@ app.patch('/todos/:id', async (req, res) => {
 });
 
 app.delete('/todos/:id', async (req, res) => {
-    try {
-        const todo = await Todo.findById(req.params.id);
-        if (!todo) return res.status(404).json({ message: 'Todo not found' });
-
-        await todo.remove();
-        res.json({ message: 'Todo deleted' });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+    await Todo.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Todo deleted' });
 });
 
 app.listen(PORT, () => {
