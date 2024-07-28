@@ -4,8 +4,11 @@
 A simple to-do list application built with the MERN stack (MongoDB, Express, React, Node.js).
 
 ## Features
-- Add and view todos
-- Mark todos as completed
+- Add and view tasks to complete.
+- Mark tasks as completed or in progress.
+- Categorize tasks and progress in certain areas.
+- Prioritize certain tasks over others.
+- Mark due dates for tasks and change them if needed.
 
 ## Installation
 
