@@ -4,17 +4,12 @@ const Store = require('electron-store');
 
 const store = new Store();
 
-let isDev = false;
-if (process.env.NODE_ENV === 'development') {
-  isDev = require('electron-is-dev');
-}
-
 let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: 800,
+    height: 600,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -22,20 +17,21 @@ function createWindow() {
   });
 
   mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, 'client/build/index.html')}`
+    process.env.ELECTRON_START_URL ||
+    `file://${path.join(__dirname, 'client/build/index.html')}`
   );
 
   mainWindow.on('closed', () => (mainWindow = null));
 }
 
 app.on('ready', createWindow);
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
+
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();

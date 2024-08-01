@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path-browserify');
+const Store = require('electron-store');
 
+const store = new Store();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -20,55 +23,49 @@ const todoSchema = new mongoose.Schema({
 
 const Todo = mongoose.model('Todo', todoSchema);
 
+// Endpoint to get all todos
 app.get('/todos', async (req, res) => {
     try {
         const todos = await Todo.find();
         res.json(todos);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching todos' });
     }
 });
 
+// Endpoint to add a new todo
 app.post('/todos', async (req, res) => {
-    const todo = new Todo({
-        text: req.body.text,
-        dueDate: req.body.dueDate,
-        category: req.body.category,
-        priority: req.body.priority,
-        status: req.body.status,
-    });
-
     try {
-        const newTodo = await todo.save();
-        res.status(201).json(newTodo);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
+        const newTodo = new Todo(req.body);
+        await newTodo.save();
+        res.json(newTodo);
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding todo' });
     }
 });
 
+// Endpoint to update a todo
 app.patch('/todos/:id', async (req, res) => {
     try {
-        const todo = await Todo.findById(req.params.id);
-        if (!todo) return res.status(404).json({ message: 'Todo not found' });
-
-        if (req.body.text != null) todo.text = req.body.text;
-        if (req.body.dueDate != null) todo.dueDate = req.body.dueDate;
-        if (req.body.category != null) todo.category = req.body.category;
-        if (req.body.priority != null) todo.priority = req.body.priority;
-        if (req.body.status != null) todo.status = req.body.status;
-
-        const updatedTodo = await todo.save();
+        const { id } = req.params;
+        const updatedTodo = await Todo.findByIdAndUpdate(id, req.body, { new: true });
         res.json(updatedTodo);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating todo' });
     }
 });
 
+// Endpoint to delete a todo
 app.delete('/todos/:id', async (req, res) => {
-    await Todo.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Todo deleted' });
+    try {
+        const { id } = req.params;
+        await Todo.findByIdAndDelete(id);
+        res.json({ message: 'Todo deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting todo' });
+    }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port: ${PORT}`);
 });

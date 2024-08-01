@@ -4,11 +4,11 @@ const TodoItem = ({ todo, updateStatus, removeTodo }) => {
     const statuses = ['Todo', 'In Progress', 'Almost Complete', 'Complete'];
 
     const handleStatusChange = (e) => {
-        updateStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority, todo.recurrence);
+        updateStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority);
     };
 
     const handleDueDateChange = (e) => {
-        updateStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority, todo.recurrence);
+        updateStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority);
     };
 
     return (
