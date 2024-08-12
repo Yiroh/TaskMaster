@@ -1,10 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path-browserify');
-const Store = require('electron-store');
-
-const store = new Store();
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -22,6 +19,9 @@ const todoSchema = new mongoose.Schema({
 });
 
 const Todo = mongoose.model('Todo', todoSchema);
+
+// Serve the React app from the build folder
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Endpoint to get all todos
 app.get('/todos', async (req, res) => {
@@ -64,6 +64,11 @@ app.delete('/todos/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error deleting todo' });
     }
+});
+
+// Catch-all handler for any request that doesn't match the API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
 
 app.listen(PORT, () => {

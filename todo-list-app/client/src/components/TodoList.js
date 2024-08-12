@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ipcRenderer } from 'electron';
+import axios from 'axios';
 import TodoItem from './TodoItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -20,12 +22,12 @@ const TodoList = () => {
   }, []);
 
   const loadTodos = async () => {
-    const todos = await ipcRenderer.invoke('getTodos');
-    setTodos(todos);
-  };
-
-  const saveTodos = async (todos) => {
-    await ipcRenderer.invoke('saveTodos', todos);
+    try {
+      const response = await axios.get('http://localhost:5000/todos');
+      setTodos(response.data);
+    } catch (error) {
+      console.error('Error loading todos:', error);
+    }
   };
 
   const addTodo = async () => {
@@ -34,26 +36,33 @@ const TodoList = () => {
       return;
     }
     const newTodo = { text, dueDate, category, priority, status: 'Todo' };
-    const updatedTodos = [...todos, newTodo];
-    setTodos(updatedTodos);
-    setText('');
-    setDueDate('');
-    setPriority('Medium');
-    await saveTodos(updatedTodos);
+    try {
+      const response = await axios.post('http://localhost:5000/todos', newTodo);
+      setTodos([...todos, response.data]);
+      setText('');
+      setDueDate('');
+      setPriority('Medium');
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
   };
 
   const updateTodoStatus = async (id, status, dueDate, category, priority) => {
-    const updatedTodos = todos.map(todo =>
-      todo.id === id ? { ...todo, status, dueDate, category, priority } : todo
-    );
-    setTodos(updatedTodos);
-    await saveTodos(updatedTodos);
+    try {
+      const response = await axios.patch(`http://localhost:5000/todos/${id}`, { status, dueDate, category, priority });
+      setTodos(todos.map(todo => (todo._id === id ? response.data : todo)));
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
   };
 
   const removeTodo = async (id) => {
-    const updatedTodos = todos.filter(todo => todo.id !== id);
-    setTodos(updatedTodos);
-    await saveTodos(updatedTodos);
+    try {
+      await axios.delete(`http://localhost:5000/todos/${id}`);
+      setTodos(todos.filter(todo => todo._id !== id));
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
   };
 
   const addCategory = () => {

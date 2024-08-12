@@ -1,8 +1,5 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const Store = require('electron-store');
-
-const store = new Store();
 
 let mainWindow;
 
@@ -16,6 +13,7 @@ function createWindow() {
     },
   });
 
+  // Load the built React app's index.html
   mainWindow.loadURL(
     process.env.ELECTRON_START_URL ||
     `file://${path.join(__dirname, 'client/build/index.html')}`
@@ -36,12 +34,4 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
-});
-
-ipcMain.handle('getTodos', () => {
-  return store.get('todos', []);
-});
-
-ipcMain.handle('saveTodos', (event, todos) => {
-  store.set('todos', todos);
 });
