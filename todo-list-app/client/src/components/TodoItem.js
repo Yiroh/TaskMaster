@@ -4,12 +4,12 @@ const TodoItem = ({ todo, updateStatus, removeTodo }) => {
     const statuses = ['Todo', 'In Progress', 'Almost Complete', 'Complete'];
 
     const handleStatusChange = (e) => {
-        updateStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority);
+        updateStatus(todo.id, e.target.value, todo.dueDate, todo.categoryId, todo.priority);
     };
-
+      
     const handleDueDateChange = (e) => {
-        updateStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority);
-    };
+        updateStatus(todo.id, todo.status, e.target.value, todo.categoryId, todo.priority);
+    };      
 
     return (
         <div className="todo-item">
@@ -27,7 +27,7 @@ const TodoItem = ({ todo, updateStatus, removeTodo }) => {
                         <option key={status} value={status}>{status}</option>
                     ))}
                 </select>
-                <button onClick={() => removeTodo(todo._id)}>Remove</button>
+                <button onClick={() => removeTodo(todo.id)}>Remove</button>
             </div>
         </div>
     );

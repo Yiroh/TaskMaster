@@ -3,6 +3,7 @@ import axios from 'axios';
 import TodoItem from './TodoItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { SERVER_URL } from '../config';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -19,14 +20,30 @@ const TodoList = () => {
 
   useEffect(() => {
     loadTodos();
+    loadCategories();
   }, []);
+
+  useEffect(() => {
+    if (categories.length > 0 && category === null) {
+      setCategory(categories[0].id); // Set to the first category's ID
+    }
+  }, [categories]);
 
   const loadTodos = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/todos');
+      const response = await axios.get(`${SERVER_URL}/todos`);
       setTodos(response.data);
     } catch (error) {
       console.error('Error loading todos:', error);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error loading categories:', error);
     }
   };
 
@@ -35,9 +52,9 @@ const TodoList = () => {
       console.log("Empty task or no category selected, not adding");
       return;
     }
-    const newTodo = { text, dueDate, category, priority, status: 'Todo' };
+    const newTodo = { text, dueDate, categoryId: category, priority, status: 'Todo' };
     try {
-      const response = await axios.post('http://localhost:5000/todos', newTodo);
+      const response = await axios.post(`${SERVER_URL}/todos`, newTodo);
       setTodos([...todos, response.data]);
       setText('');
       setDueDate('');
@@ -46,42 +63,53 @@ const TodoList = () => {
       console.error('Error adding todo:', error);
     }
   };
+  
 
-  const updateTodoStatus = async (id, status, dueDate, category, priority) => {
+  const updateTodoStatus = async (id, status, dueDate, categoryId, priority) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/todos/${id}`, { status, dueDate, category, priority });
-      setTodos(todos.map(todo => (todo._id === id ? response.data : todo)));
+      const response = await axios.patch(`${SERVER_URL}/todos/${id}`, { status, dueDate, categoryId, priority });
+      setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
     } catch (error) {
       console.error('Error updating todo:', error);
     }
-  };
+  };  
 
   const removeTodo = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/todos/${id}`);
-      setTodos(todos.filter(todo => todo._id !== id));
+      await axios.delete(`${SERVER_URL}/todos/${id}`);
+      setTodos(todos.filter(todo => todo.id !== id));
     } catch (error) {
       console.error('Error deleting todo:', error);
     }
   };
 
-  const addCategory = () => {
+  const addCategory = async () => {
     if (newCategory.trim() === '') {
       console.log("Empty category name, not adding");
       return;
     }
-    const newCat = { id: Date.now(), name: newCategory, color: newCategoryColor };
-    setCategories([...categories, newCat]);
-    setNewCategory('');
-    setNewCategoryColor('#000000');
-    setCategory(newCat.id);
+    const categoryData = { name: newCategory, color: newCategoryColor };
+    try {
+      const response = await axios.post(`${SERVER_URL}/categories`, categoryData);
+      setCategories([...categories, response.data]);
+      setNewCategory('');
+      setNewCategoryColor('#000000');
+      setCategory(response.data.id); // Set the selected category to the new category's ID
+    } catch (error) {
+      console.error('Error adding category:', error);
+    }
   };
 
-  const removeCategory = (id) => {
+  const removeCategory = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
-      setCategories(categories.filter(cat => cat.id !== id));
-      setTodos(todos.filter(todo => todo.category !== id));
-      if (category === id) setCategory(null);
+      try {
+        await axios.delete(`${SERVER_URL}/categories/${id}`);
+        setCategories(categories.filter(cat => cat.id !== id));
+        setTodos(todos.filter(todo => todo.categoryId !== id));
+        if (category === id) setCategory(null);
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
     }
   };
 
@@ -90,17 +118,22 @@ const TodoList = () => {
     setEditingCategoryName(name);
   };
 
-  const saveCategoryName = (id) => {
-    setCategories(categories.map(cat => cat.id === id ? { ...cat, name: editingCategoryName } : cat));
-    setEditingCategoryId(null);
-    setEditingCategoryName('');
+  const saveCategoryName = async (id) => {
+    try {
+      const response = await axios.patch(`${SERVER_URL}/categories/${id}`, { name: editingCategoryName });
+      setCategories(categories.map(cat => cat.id === id ? response.data : cat));
+      setEditingCategoryId(null);
+      setEditingCategoryName('');
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
   };
 
   const calculateCategoryProgress = (categoryId) => {
-    const categoryTodos = todos.filter(todo => todo.category === categoryId);
+    const categoryTodos = todos.filter(todo => todo.categoryId === categoryId);
     const completedTodos = categoryTodos.filter(todo => todo.status === 'Complete');
     return categoryTodos.length === 0 ? 0 : (completedTodos.length / categoryTodos.length) * 100;
-  };
+  };  
 
   return (
     <div className="todo-list">
@@ -180,29 +213,65 @@ const TodoList = () => {
         <div className="all-tasks-section">
           <h3>All Tasks</h3>
           <div className="tasks">
-            {todos.map(todo => (
-              <div key={todo._id} className={`all-tasks-item ${todo.status === 'Complete' ? 'completed-task' : ''}`}>
-                <div className="task-info">
-                  <div className="category-label" style={{ backgroundColor: categories.find(cat => cat.id === todo.category)?.color }}>
-                    <span className="tooltiptext">{categories.find(cat => cat.id === todo.category)?.name}</span>
+            {todos.map(todo => {
+              // Find the category associated with this todo
+              const category = categories.find(cat => cat.id === todo.categoryId);
+
+              return (
+                <div
+                  key={todo.id}
+                  className={`all-tasks-item ${todo.status === 'Complete' ? 'completed-task' : ''}`}
+                >
+                  <div className="task-info">
+                    {category && (
+                      <div
+                        className="category-label"
+                        style={{ backgroundColor: category.color }}
+                      >
+                        <span className="tooltiptext">{category.name}</span>
+                      </div>
+                    )}
+                    <span>{todo.text}</span>
                   </div>
-                  <span>{todo.text}</span>
+                  <div className="task-actions">
+                    <input
+                      type="date"
+                      value={todo.dueDate ? todo.dueDate.split('T')[0] : ''}
+                      onChange={(e) =>
+                        updateTodoStatus(
+                          todo.id,
+                          todo.status,
+                          e.target.value,
+                          todo.categoryId,
+                          todo.priority
+                        )
+                      }
+                    />
+                    <select
+                      value={todo.status}
+                      onChange={(e) =>
+                        updateTodoStatus(
+                          todo.id,
+                          e.target.value,
+                          todo.dueDate,
+                          todo.categoryId,
+                          todo.priority
+                        )
+                      }
+                    >
+                      {['Todo', 'In Progress', 'Almost Complete', 'Complete'].map(
+                        (status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        )
+                      )}
+                    </select>
+                    <button onClick={() => removeTodo(todo.id)}>Remove</button>
+                  </div>
                 </div>
-                <div className="task-actions">
-                  <input 
-                    type="date" 
-                    value={todo.dueDate ? todo.dueDate.split('T')[0] : ''} 
-                    onChange={(e) => updateTodoStatus(todo._id, todo.status, e.target.value, todo.category, todo.priority)}
-                  />
-                  <select value={todo.status} onChange={(e) => updateTodoStatus(todo._id, e.target.value, todo.dueDate, todo.category, todo.priority)}>
-                    {['Todo', 'In Progress', 'Almost Complete', 'Complete'].map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                  <button onClick={() => removeTodo(todo._id)}>Remove</button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -239,9 +308,9 @@ const TodoList = () => {
               )}
             </h2>
             <div className="tasks">
-              {todos.filter(todo => todo.category === cat.id).map(todo => (
+              {todos.filter(todo => todo.categoryId === cat.id).map(todo => (
                 <TodoItem 
-                  key={todo._id} 
+                  key={todo.id} 
                   todo={todo} 
                   updateStatus={updateTodoStatus} 
                   removeTodo={removeTodo}
